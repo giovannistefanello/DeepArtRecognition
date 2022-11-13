@@ -28,7 +28,7 @@ def check_ascii_conformity(df: pd.DataFrame):
     for col in df.columns:
         weird_names = check_one_col(df[col])
         if weird_names:
-            logger.warning(f'Entries {weird_names} in column \'{col}\' contain some non-ascii characters.')
+            logger.warning(f'Dataframe entries {weird_names} in column \'{col}\' contain some non-ascii characters.')
             output = False
 
     return output
