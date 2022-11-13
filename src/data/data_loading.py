@@ -2,8 +2,8 @@
 import logging
 import os
 
-import matplotlib.pyplot as plt
 # third party libraries
+import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf
 
@@ -38,10 +38,9 @@ def input_pipeline(dataframe: pd.DataFrame, img_size=None):
         if img_size:
             if tf.shape(image)[-1] != 3:
                 if tf.rank(image) == 2:
-                    image = tf.stack([image] * 3, axis=2)
-                elif tf.shape(image)[-1] == 1:
-                    image = tf.repeat(image, 3, axis=2)
-                image = tf.reshape(image, (*img_size, 3), )
+                    image = tf.expand_dims(image, axis=-1)
+                image = tf.repeat(image, 3, axis=2)
+                image = tf.reshape(image, (*img_size, 3))
 
         return image, label_oh
 
