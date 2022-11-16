@@ -1,6 +1,8 @@
 # MODEL TRAINING SCRIPT
 import logging
+import datetime
 import os
+import time
 
 # third party libraries
 import pandas as pd
@@ -45,8 +47,6 @@ from src.models import model as src_model
 # logger.addHandler(ch)
 
 
-# add callbacks (model_checkpoint, tensorboard)
-# define callbacks
 def lr_scheduler(epoch, lr):
     if epoch < 10:
         return lr
@@ -113,11 +113,22 @@ model.compile(optimizer=optimizer,
 # print model summary
 model.summary()
 
+# add callbacks (model_checkpoint, tensorboard)
+# define callbacks
+ts = time.time()
+timestring = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d_%H-%M-%S')
+model_folder = os.path.join('../models/temp/', timestring)
 
+model_saver = tf.keras.callbacks.ModelCheckpoint(
+    os.path.join(model_folder, 'epoch{epoch:02d}_vl{val_loss:.2f}_va{val_categorical_accuracy}.h5'),
+        )
+tb_callback = tf.keras.callbacks.TensorBoard(os.path.join(model_folder, 'logs'), profile_batch=10)
 lr_schdl = tf.keras.callbacks.LearningRateScheduler(lr_scheduler)
 
 history = model.fit(train_ds,
                     validation_data=validation_ds,
-                    epochs=15,
-                    callbacks=[lr_schdl]
+                    epochs=20,
+                    callbacks=[lr_schdl,
+                               model_saver,
+                               tb_callback]
                     )
