@@ -6,6 +6,11 @@ from tensorflow import keras
 from keras import layers
 
 
+# define data preprocessing pipeline
+data_preprocessing = keras.Sequential([
+    layers.Rescaling(1./255)
+])
+
 # define data augmentation pipeline
 data_augmentation = keras.Sequential([
     layers.RandomFlip(mode='horizontal_and_vertical'),
@@ -21,8 +26,11 @@ def get_model(num_classes: int, input_shape: tuple[int, int, int]):
     # define input shape
     inputs = layers.Input(input_shape)
 
+    # apply preprocessing
+    x = data_preprocessing(inputs)
+
     # apply augmentation
-    x = data_augmentation(inputs)
+    x = data_augmentation(x)
 
     # feature extractor and predictor
     x = layers.Conv2D(16, (3, 3), padding='same', use_bias=False)(x)
@@ -79,4 +87,5 @@ def get_model(num_classes: int, input_shape: tuple[int, int, int]):
 
 def from_pretrained_model(base_model: keras.models.Model, num_classes: int, input_shape: tuple[int]):
     # TODO: finish function with transfer learning model setup
+
     return
