@@ -8,15 +8,16 @@ from keras import layers
 
 # define data augmentation pipeline
 data_augmentation = keras.Sequential([
-    layers.RandomFlip(mode='horizontal'),
+    layers.RandomFlip(mode='horizontal_and_vertical'),
     # layers.RandomRotation(0.2),
     layers.RandomZoom(0.2),
-    layers.RandomContrast(0.2)
+    layers.RandomContrast(0.2),
+    layers.RandomBrightness(0.2)
 ])
 
 
 # here we define a custom model from scratch
-def get_model(num_classes, input_shape):
+def get_model(num_classes: int, input_shape: tuple[int, int, int]):
     # define input shape
     inputs = layers.Input(input_shape)
 
@@ -74,3 +75,8 @@ def get_model(num_classes, input_shape):
     outputs = layers.Dense(num_classes, activation='softmax')(x)
 
     return keras.models.Model(inputs=inputs, outputs=outputs)
+
+
+def from_pretrained_model(base_model: keras.models.Model, num_classes: int, input_shape: tuple[int]):
+    # TODO: finish function with transfer learning model setup
+    return
