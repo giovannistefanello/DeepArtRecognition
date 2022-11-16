@@ -132,6 +132,9 @@ dmypy.json
 # Data folder
 /data/
 
+# Temporary models folder
+/models/temp/
+
 # .bat files
 *.bat
 
