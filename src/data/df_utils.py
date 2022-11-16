@@ -34,11 +34,16 @@ def check_ascii_conformity(df: pd.DataFrame):
     return output
 
 
-def create_dataframe(data_dir: str):
+def create_dataframe(data_dir: str, skip_files: list[str] = None):
 
     # basic data fetch
     image_filenames = glob.glob(os.path.join(data_dir, '**/*.jpg'),
                                 recursive=True)
+
+    # for broken jpgs
+    if skip_files:
+        image_filenames = [filename for filename in image_filenames if filename not in skip_files]
+
     # create a bare data info df
     df = pd.DataFrame({'filepath': image_filenames})
     df['artist'] = df['filepath'].apply(lambda x: x.split(os.path.sep)[-2].replace('_', ' '))
