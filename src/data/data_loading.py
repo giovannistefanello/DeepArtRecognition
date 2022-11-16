@@ -21,16 +21,15 @@ def decode_image(filepath: str, img_size: tuple[int, int] = None):
     # TODO: VARIOUS CROPPINGS: HOW?
     if img_size:
         image = tf.image.resize(image, img_size)  # resize to uniform size
-    image = image/255.  # rescale image in [0,1]
     return image
 
 
 def input_pipeline(dataframe: pd.DataFrame, img_size: tuple[int, int] = None):
 
-    num_classes = len(dataframe['target'].unique())
+    num_classes = len(dataframe['id'].unique())
 
     def process_row(row):
-        label_oh = tf.one_hot(row['target'],
+        label_oh = tf.one_hot(row['id'],
                               depth=num_classes)
         image = decode_image(row['filepath'], img_size=img_size)
 
