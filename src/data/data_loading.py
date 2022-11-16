@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 AUTOTUNE = tf.data.AUTOTUNE
 
 
-def decode_image(filepath, img_size):
+def decode_image(filepath: str, img_size: tuple[int, int] = None):
     image = tf.io.decode_jpeg(tf.io.read_file(filepath))
     # TODO: THINK ABOUT A BETTER WAY TO RESIZE
     # TODO: VARIOUS CROPPINGS: HOW?
@@ -25,7 +25,7 @@ def decode_image(filepath, img_size):
     return image
 
 
-def input_pipeline(dataframe: pd.DataFrame, img_size=None):
+def input_pipeline(dataframe: pd.DataFrame, img_size: tuple[int, int] = None):
 
     num_classes = len(dataframe['target'].unique())
 
@@ -49,7 +49,8 @@ def input_pipeline(dataframe: pd.DataFrame, img_size=None):
     return ds
 
 
-def performance_pipeline(ds: tf.data.Dataset, batchsize=0, bufsiz=0, cache=False, cache_path: str = ""):
+def performance_pipeline(ds: tf.data.Dataset, batchsize: int = 0, bufsiz: int = 0,
+                         cache: bool = False, cache_path: str = ""):
     if cache:
         ds = ds.cache(cache_path)
     if bufsiz > 0:
