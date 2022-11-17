@@ -6,6 +6,7 @@ import os
 # third party libraries
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 # custom libraries
 from src.data import df_utils
@@ -52,4 +53,16 @@ df['id'] = df['artist'].apply(lambda x: integer_mapping[x])
 print(f'Number of unique artists: {keep_artists}')
 print(f'Dataframe:\n{df.head()}')
 
-df.to_csv(os.path.join(DATA_DIR, 'training_df.csv'), index=False)
+# partition into train, validation and test, stratify by artist
+train_df, val_test_df = train_test_split(df,
+                                         test_size=0.2,
+                                         random_state=42,
+                                         stratify=df['artist'])
+validation_df, test_df = train_test_split(val_test_df,
+                                          test_size=0.5,
+                                          random_state=42,
+                                          stratify=val_test_df['artist'])
+
+train_df.to_csv(os.path.join(DATA_DIR, 'train.csv'), index=False)
+validation_df.to_csv(os.path.join(DATA_DIR, 'validation.csv'), index=False)
+test_df.to_csv(os.path.join(DATA_DIR, 'test.csv'), index=False)
