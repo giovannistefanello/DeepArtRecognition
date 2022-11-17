@@ -6,7 +6,6 @@ import time
 
 # third party libraries
 import pandas as pd
-from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow import keras
 
@@ -61,18 +60,11 @@ IMG_SIZE = 256, 256
 
 # PREPARE DATA FOR TRAINING
 
-# load the training_df.csv
-df = pd.read_csv(os.path.join(DATA_DIR, 'training_df.csv'))
+# load the training, validation and test datasets
+train_df = pd.read_csv(os.path.join(DATA_DIR, 'train.csv'))
+validation_df = pd.read_csv(os.path.join(DATA_DIR, 'validation.csv'))
+test_df = pd.read_csv(os.path.join(DATA_DIR, 'test.csv'))
 
-# partition into train, validation and test, stratify by artist
-train_df, val_test_df = train_test_split(df,
-                                         test_size=0.2,
-                                         random_state=42,
-                                         stratify=df['artist'])
-validation_df, test_df = train_test_split(val_test_df,
-                                          test_size=0.5,
-                                          random_state=42,
-                                          stratify=val_test_df['artist'])
 # shuffle the dataframes
 train_df = train_df.sample(frac=1, random_state=42)
 validation_df = validation_df.sample(frac=1, random_state=42)
@@ -93,7 +85,8 @@ test_ds = data_loading.performance_pipeline(test_ds)
 
 # DEFINE MODEL AND TRAIN
 
-num_classes = len(df['id'].unique())
+unique_ids = pd.concat([train_df, validation_df, test_df])['id'].unique()
+num_classes = len(unique_ids)
 
 model = src_model.get_model(num_classes=num_classes, input_shape=(*IMG_SIZE, 3))
 
@@ -113,12 +106,10 @@ model.compile(optimizer=optimizer,
 # print model summary
 model.summary()
 
-# add callbacks (model_checkpoint, tensorboard)
 # define callbacks
 ts = time.time()
 timestring = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d_%H-%M-%S')
 model_folder = os.path.join('../models/temp/', timestring)
-
 model_saver = tf.keras.callbacks.ModelCheckpoint(
     os.path.join(model_folder, 'epoch{epoch:02d}_vl{val_loss:.2f}_va{val_categorical_accuracy}.h5'),
         )
