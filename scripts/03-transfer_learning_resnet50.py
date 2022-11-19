@@ -81,9 +81,6 @@ test_ds = data_loading.input_pipeline(test_df, img_size=IMG_SIZE)
 test_ds = data_loading.performance_pipeline(test_ds)
 
 # compute class weights
-print(pd.concat([train_df, validation_df, test_df]).groupby('id').count())
-print(pd.concat([train_df, validation_df, test_df]).groupby('id').max())
-
 counts = pd.concat([train_df, validation_df, test_df]).groupby('id').count()['filepath'].to_dict()
 total = sum(counts.values())
 class_weights_dict = {}
@@ -135,6 +132,7 @@ lr_schdl = tf.keras.callbacks.LearningRateScheduler(lr_scheduler)
 history1 = model.fit(train_ds,
                      validation_data=validation_ds,
                      epochs=20,
+                     # class_weight=class_weights_dict,
                      callbacks=[lr_schdl,
                                 model_saver,
                                 tb_callback]
@@ -167,8 +165,8 @@ model.summary()
 # continue training
 history2 = model.fit(train_ds,
                      validation_data=validation_ds,
-                     epochs=20,
-                     class_weight=class_weights_dict,
+                     epochs=15,
+                     # class_weight=class_weights_dict,
                      callbacks=[lr_schdl,
                                 model_saver,
                                 tb_callback]
