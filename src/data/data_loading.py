@@ -52,12 +52,12 @@ def input_pipeline(dataframe: pd.DataFrame, img_size: tuple[int, int] = None):
     return ds
 
 
-def performance_pipeline(ds: tf.data.Dataset, batchsize: int = 0, bufsiz: int = 0,
+def performance_pipeline(ds: tf.data.Dataset, batchsize: int = 0, shuffle_bufsiz: int = 0,
                          cache: bool = False, cache_path: str = ""):
     if cache:
         ds = ds.cache(cache_path)
-    if bufsiz > 0:
-        ds = ds.shuffle(buffer_size=bufsiz)
+    if shuffle_bufsiz > 0:
+        ds = ds.shuffle(buffer_size=shuffle_bufsiz)
     if batchsize > 0:
         ds = ds.batch(batchsize)
     ds = ds.prefetch(buffer_size=AUTOTUNE)
@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     # apply pipelines
     ds = input_pipeline(df, img_size=(256, 256))
-    ds = performance_pipeline(ds, batchsize=16, bufsiz=16)
+    ds = performance_pipeline(ds, batchsize=16, shuffle_bufsiz=16)
 
     print('Checking one element in dataset')
     for elem in ds.take(1):
