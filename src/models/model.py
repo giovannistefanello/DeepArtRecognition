@@ -7,18 +7,23 @@ from keras import layers
 
 
 # define data preprocessing pipeline
-data_preprocessing = keras.Sequential([
-    layers.Rescaling(1./255)
-])
+def data_preprocessing():
+    _data_preprocessing = keras.Sequential([
+        layers.Rescaling(1./255)
+    ])
+    return _data_preprocessing
+
 
 # define data augmentation pipeline
-data_augmentation = keras.Sequential([
-    layers.RandomFlip(mode='horizontal_and_vertical'),
-    # layers.RandomRotation(0.2),
-    layers.RandomZoom(0.2),
-    layers.RandomContrast(0.2),
-    layers.RandomBrightness(0.2)
-])
+def data_augmentation():
+    _data_augmentation = keras.Sequential([
+        layers.RandomFlip(mode='horizontal_and_vertical'),
+        # layers.RandomRotation(0.2),
+        layers.RandomZoom(0.2),
+        layers.RandomContrast(0.2),
+        layers.RandomBrightness(0.2)
+    ])
+    return _data_augmentation
 
 
 # here we define a custom model from scratch
@@ -27,10 +32,10 @@ def get_model(num_classes: int, input_shape: tuple[int, int, int]):
     inputs = layers.Input(input_shape)
 
     # apply preprocessing
-    x = data_preprocessing(inputs)
+    x = data_preprocessing()(inputs)
 
     # apply augmentation
-    x = data_augmentation(x)
+    x = data_augmentation()(x)
 
     # feature extractor and predictor
     x = layers.Conv2D(16, (3, 3), padding='same', use_bias=False)(x)
@@ -97,7 +102,7 @@ def from_pretrained_model(base_model: keras.models.Model, num_classes: int, inpu
         processed = inputs
 
     # apply augmentation
-    augmented = data_augmentation(processed)
+    augmented = data_augmentation()(processed)
 
     # pass to base model
     x = base_model(augmented)
