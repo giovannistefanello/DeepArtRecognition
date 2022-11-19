@@ -74,11 +74,22 @@ print(f'Number of test pictures: {len(test_df)}')
 
 # apply data streaming pipelines
 train_ds = data_loading.input_pipeline(train_df, img_size=IMG_SIZE)
-train_ds = data_loading.performance_pipeline(train_ds, batchsize=32, bufsiz=32)
+train_ds = data_loading.performance_pipeline(train_ds, batchsize=32, shuffle_bufsiz=32)
 validation_ds = data_loading.input_pipeline(validation_df, img_size=IMG_SIZE)
 validation_ds = data_loading.performance_pipeline(validation_ds, batchsize=32)
 test_ds = data_loading.input_pipeline(test_df, img_size=IMG_SIZE)
 test_ds = data_loading.performance_pipeline(test_ds)
+
+# compute class weights
+print(pd.concat([train_df, validation_df, test_df]).groupby('id').count())
+print(pd.concat([train_df, validation_df, test_df]).groupby('id').max())
+
+counts = pd.concat([train_df, validation_df, test_df]).groupby('id').count()['filepath'].to_dict()
+total = sum(counts.values())
+class_weights_dict = {}
+for ids, count in counts.items():
+    class_weights_dict.update({ids: total/(len(counts)*count)})
+# TODO: smoothing?
 
 # DEFINE MODEL AND TRAIN ONLY TOP LAYERS
 
@@ -93,8 +104,6 @@ for layer in base_model.layers:
 
 model = src_model.from_pretrained_model(base_model, num_classes=num_classes, input_shape=(*IMG_SIZE, 3))
 
-model.summary()
-
 # define optimizer, loss, and metrics
 optimizer = keras.optimizers.Adam(learning_rate=1e-4)
 loss = keras.losses.categorical_crossentropy
@@ -108,6 +117,7 @@ model.compile(optimizer=optimizer,
               metrics=metrics
               )
 
+print('Model summary with backbone frozen layers:')
 # print model summary
 model.summary()
 
@@ -150,10 +160,15 @@ model.compile(optimizer=optimizer,
               metrics=metrics
               )
 
+print('Model summary with some trainable backbone layers:')
+# print model summary
+model.summary()
+
 # continue training
 history2 = model.fit(train_ds,
                      validation_data=validation_ds,
                      epochs=20,
+                     class_weight=class_weights_dict,
                      callbacks=[lr_schdl,
                                 model_saver,
                                 tb_callback]
