@@ -8,8 +8,12 @@ import pandas as pd
 import tensorflow as tf
 
 # set logger
-logging.basicConfig(level=logging.INFO, format='%(asctime)s[%(name)s][%(levelname)s]: %(message)s')
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s[%(name)s][%(levelname)s]: %(message)s')
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)
 
 # global variables
 AUTOTUNE = tf.data.AUTOTUNE
@@ -69,7 +73,7 @@ if __name__ == '__main__':
     df = df_utils.create_dataframe(img_dir)
 
     # add dummy target label
-    df['target'] = [i % 7 for i in range(len(df))]
+    df['id'] = [i % 7 for i in range(len(df))]
 
     # apply pipelines
     ds = input_pipeline(df, img_size=(256, 256))
@@ -79,6 +83,6 @@ if __name__ == '__main__':
     for elem in ds.take(1):
         print('data_shape:', elem[0].shape)
         print('target_shape:', elem[1].shape)
-        plt.imshow(elem[0][0])
+        plt.imshow(elem[0][0]/255.)
         plt.title(f'target: {elem[1][0]}')
         plt.show()
