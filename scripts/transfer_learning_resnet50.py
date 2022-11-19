@@ -9,6 +9,11 @@ import pandas as pd
 import tensorflow as tf
 from tensorflow import keras
 
+# custom libraries
+from src.data import data_loading
+from src.models import model as src_model
+
+
 gpus = tf.config.list_physical_devices('GPU')
 if gpus:
     # Restrict TensorFlow to only allocate 1.5GB of memory on the GPU
@@ -28,22 +33,14 @@ if gpus:
 # for gpu in gpus:
 #     tf.config.experimental.set_memory_growth(gpu, enable=True)
 
-# custom libraries
-from src.data import data_loading
-from src.models import model as src_model
-
 
 # set logger
-# logging.basicConfig(level=logging.INFO, format='%(asctime)s[%(name)s][%(levelname)s]: %(message)s')
-# logger = logging.getLogger('training')
-
-# # create console handler with a higher log level
-# ch = logging.StreamHandler()
-# ch.setLevel(logging.DEBUG)
-#
-# ch.setFormatter(CustomFormatter())
-#
-# logger.addHandler(ch)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s[%(name)s][%(levelname)s]: %(message)s')
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)
 
 
 def lr_scheduler(epoch, lr):
