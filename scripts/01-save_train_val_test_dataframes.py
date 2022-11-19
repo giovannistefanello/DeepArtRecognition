@@ -30,6 +30,8 @@ img_dir = os.path.join(DATA_DIR, 'images')
 broken_jpgs = ['/kaggle/input/best-artworks-of-all-time/images/images/Edgar_Degas/Edgar_Degas_216.jpg']
 df = df_utils.create_dataframe(img_dir, skip_files=broken_jpgs)
 df_utils.check_ascii_conformity(df)
+# there is a problem with one of the artists with an umlaut...
+df.loc[df['artist'].str.contains('Albrecht'), 'artist'] = 'Albrecht Durer'
 
 # load the artist info dataframe
 print('Loading artists.csv...')
@@ -55,10 +57,10 @@ keep_artists = artist_df.query('paintings >= 200')['name'].unique().tolist()
 
 # associate each artist with an integer
 df = df[df['artist'].isin(keep_artists)].copy()
-integer_mapping = {x: i for i, x in enumerate(keep_artists)}
-df['id'] = df['artist'].apply(lambda x: integer_mapping[x])
+artist_to_id = {x: i for i, x in enumerate(keep_artists)}
+df['id'] = df['artist'].apply(lambda x: artist_to_id[x])
 
-print(f'Number of unique artists: {keep_artists}')
+print(f'Number of unique artists: {len(keep_artists)}')
 print(f'Dataframe:\n{df.head()}')
 
 # partition into train, validation and test, stratify by artist
