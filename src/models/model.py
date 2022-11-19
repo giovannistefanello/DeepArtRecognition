@@ -80,12 +80,41 @@ def get_model(num_classes: int, input_shape: tuple[int, int, int]):
     x = layers.Dense(512, activation='relu')(x)
     x = layers.Dropout(0.2)(x)
 
-    outputs = layers.Dense(num_classes, activation='softmax')(x)
+    output = layers.Dense(num_classes, activation='softmax')(x)
 
-    return keras.models.Model(inputs=inputs, outputs=outputs)
+    return keras.models.Model(inputs=inputs, outputs=output)
 
 
-def from_pretrained_model(base_model: keras.models.Model, num_classes: int, input_shape: tuple[int]):
-    # TODO: finish function with transfer learning model setup
+def from_pretrained_model(base_model: keras.models.Model, num_classes: int, input_shape: tuple[int], preproc_func=None):
 
-    return
+    # define input shape
+    inputs = layers.Input(input_shape)
+
+    # apply preprocessing
+    if preproc_func:
+        processed = preproc_func(inputs)
+    else:
+        processed = inputs
+
+    # apply augmentation
+    augmented = data_augmentation(processed)
+
+    # pass to base model
+    x = base_model(augmented)
+
+    # Add layers at the end
+    x = layers.Flatten()(x)
+
+    x = layers.Dense(512, kernel_initializer='he_uniform')(x)
+    x = layers.Dropout(0.2)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+
+    x = layers.Dense(16, kernel_initializer='he_uniform')(x)
+    x = layers.Dropout(0.2)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+
+    output = layers.Dense(num_classes, activation='softmax')(x)
+
+    return keras.models.Model(inputs=inputs, outputs=output)
