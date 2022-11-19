@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 from src.data import df_utils
 
 
-DATA_DIR = '../data'
+DATA_DIR: str = '../data'
 
 
 # load the raw data info df

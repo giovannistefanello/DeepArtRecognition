@@ -54,8 +54,8 @@ def lr_scheduler(epoch, lr):
 
 
 # global custom variables
-DATA_DIR = '../data'
-IMG_SIZE = 256, 256
+DATA_DIR: str = '../data'
+IMG_SIZE: tuple[int, int] = 256, 256
 
 
 # PREPARE DATA FOR TRAINING
@@ -116,6 +116,7 @@ model_saver = tf.keras.callbacks.ModelCheckpoint(
 tb_callback = tf.keras.callbacks.TensorBoard(os.path.join(model_folder, 'logs'), profile_batch=10)
 lr_schdl = tf.keras.callbacks.LearningRateScheduler(lr_scheduler)
 
+# train the model
 history = model.fit(train_ds,
                     validation_data=validation_ds,
                     epochs=20,
