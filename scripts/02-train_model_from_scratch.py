@@ -74,7 +74,7 @@ print(f'Number of test pictures: {len(test_df)}')
 
 # apply data streaming pipelines
 train_ds = data_loading.input_pipeline(train_df, img_size=IMG_SIZE)
-train_ds = data_loading.performance_pipeline(train_ds, batchsize=32, bufsiz=32)
+train_ds = data_loading.performance_pipeline(train_ds, batchsize=32, shuffle_bufsiz=32)
 validation_ds = data_loading.input_pipeline(validation_df, img_size=IMG_SIZE)
 validation_ds = data_loading.performance_pipeline(validation_ds, batchsize=32)
 test_ds = data_loading.input_pipeline(test_df, img_size=IMG_SIZE)
