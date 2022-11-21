@@ -41,12 +41,13 @@ def check_ascii_conformity(df: pd.DataFrame):
 def create_dataframe(data_dir: str, skip_files: list[str] = None):
 
     # basic data fetch
-    image_filenames = glob.glob(os.path.join(data_dir, '**/*.jpg'),
-                                recursive=True)
+    image_filenames = sorted(glob.glob(os.path.join(data_dir, '**/*.jpg'),
+                                       recursive=True))
 
     # for broken jpgs
     if skip_files:
-        image_filenames = [filename for filename in image_filenames if filename not in skip_files]
+        image_filenames = [filename for filename in image_filenames
+                           if not any([skip_file in filename for skip_file in skip_files])]
 
     # create a bare data info df
     df = pd.DataFrame({'filepath': image_filenames})
@@ -58,8 +59,11 @@ def create_dataframe(data_dir: str, skip_files: list[str] = None):
 
 
 if __name__ == '__main__':
-    DATA_DIR = '../../data/images'
-    df = create_dataframe(DATA_DIR)
+    DATA_DIR = '../../data'
+    img_dir = os.path.join(DATA_DIR, 'images')
+    # broken jpgs
+    broken_jpgs = ['Edgar_Degas_216.jpg']
+    df = create_dataframe(img_dir, skip_files=broken_jpgs)
     check_ascii_conformity(df)
 
     print(df.head())
