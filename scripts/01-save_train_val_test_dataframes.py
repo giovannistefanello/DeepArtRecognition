@@ -27,7 +27,7 @@ DATA_DIR: str = '../data'
 print('Loading raw data dataframe...')
 img_dir = os.path.join(DATA_DIR, 'images')
 # broken jpgs
-broken_jpgs = ['/kaggle/input/best-artworks-of-all-time/images/images/Edgar_Degas/Edgar_Degas_216.jpg']
+broken_jpgs = ['Edgar_Degas_216.jpg']
 df = df_utils.create_dataframe(img_dir, skip_files=broken_jpgs)
 df_utils.check_ascii_conformity(df)
 # there is a problem with one of the artists with an umlaut...
