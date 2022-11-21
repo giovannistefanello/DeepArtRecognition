@@ -57,9 +57,11 @@ test_ds = data_loading.input_pipeline(test_df, img_size=IMG_SIZE)
 test_ds = data_loading.performance_pipeline(test_ds, batchsize=1)
 
 # Load pre-trained model
-model = keras.models.load_model(os.path.join(MODEL_DIR, 'model.h5'))
+model = keras.models.load_model(os.path.join(MODEL_DIR, 'model_resnet_tl.h5'))
 
 # Test model
+model.evaluate(test_ds)
+
 preds = model.predict(test_ds)
 guesses = np.argmax(preds, axis=-1)
 guesses_cat = [id_to_artist[i] for i in guesses]
@@ -69,4 +71,5 @@ true_cat = [id_to_artist[i] for i in true]
 conf_mat = sklmetrics.confusion_matrix(true_cat, guesses_cat)
 fig, ax = plt.subplots(figsize=(17, 17))
 sklmetrics.ConfusionMatrixDisplay.from_predictions(true_cat, guesses_cat, normalize='true', ax=ax)
+plt.savefig('../reports/figures/confusion_matrix.png')
 plt.show()
