@@ -1,4 +1,4 @@
-# SAVE DATAFRAME ONCE FOR TRAINING SCRIPT
+""" Save dataframes once for training script """
 
 # standard imports
 import logging

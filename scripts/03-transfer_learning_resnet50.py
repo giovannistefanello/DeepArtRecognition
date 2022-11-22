@@ -1,4 +1,5 @@
-# MODEL TRAINING SCRIPT
+""" Resnet50 transfer learning script """
+
 import logging
 import datetime
 import os
@@ -44,6 +45,14 @@ logger.addHandler(stream_handler)
 
 
 def lr_scheduler(epoch, lr):
+    """
+    Learning rate scheduler
+
+    Args:
+        epoch (int): current epoch
+        lr (float): current learning rate
+    """
+
     if epoch < 10:
         return lr
     else:

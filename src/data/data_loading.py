@@ -1,4 +1,6 @@
-# FUNCTIONS AND UTILITIES FOR DATA LOADING
+""" Functions and utilities for data loading """
+
+# standard libraries
 import logging
 import os
 
@@ -20,19 +22,37 @@ AUTOTUNE = tf.data.AUTOTUNE
 
 
 def decode_image(filepath: str, img_size: tuple[int, int] = None):
+    """
+    Decode an image from a file path.
+
+    Args:
+        filepath (str): Path to the image file.
+        img_size (tuple[int, int], optional): Target size of the image. Defaults to None.
+    """
+
     image = tf.io.decode_jpeg(tf.io.read_file(filepath))
-    # TODO: THINK ABOUT A BETTER WAY TO RESIZE
-    # TODO: VARIOUS CROPPINGS: HOW?
     if img_size:
         image = tf.image.resize(image, img_size)  # resize to uniform size
     return image
 
 
 def input_pipeline(dataframe: pd.DataFrame, img_size: tuple[int, int] = None):
+    """
+    Pipeline for loading images from a filepaths dataframe.
 
+    Args:
+        dataframe (pd.DataFrame): DataFrame containing the image filepaths.
+        img_size (tuple[int, int], optional): Target size of the image. Defaults to None.
+    """
     num_classes = len(dataframe['id'].unique())
 
     def process_row(row):
+        """
+        Process a row of the dataframe.
+
+        Args:
+            row (pd.Series): Row of the dataframe.
+        """
         label_oh = tf.one_hot(row['id'],
                               depth=num_classes)
         image = decode_image(row['filepath'], img_size=img_size)
@@ -54,6 +74,17 @@ def input_pipeline(dataframe: pd.DataFrame, img_size: tuple[int, int] = None):
 
 def performance_pipeline(ds: tf.data.Dataset, batchsize: int = 0, shuffle_bufsiz: int = 0,
                          cache: bool = False, cache_path: str = ""):
+    """
+    Pipeline to set various performance parameters in a tf.data.Dataset.
+
+    Args:
+        ds (tf.data.Dataset): the tf.data.Dataset to be optimized.
+        batchsize (int, optional): Batch size. Defaults to 0.
+        shuffle_bufsiz (int, optional): Shuffle buffer size. Defaults to 0.
+        cache (bool, optional): Whether to cache the dataset. Defaults to False.
+        cache_path (str, optional): Path to the cache directory. Defaults to "".
+    """
+
     if cache:
         ds = ds.cache(cache_path)
     if shuffle_bufsiz > 0:

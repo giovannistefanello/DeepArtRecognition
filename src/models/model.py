@@ -1,13 +1,14 @@
-# MODEL ARCHITECTURE AND UTILITIES
+""" Model architectures and utilities """
 
 # third party libraries
-import tensorflow as tf
 from tensorflow import keras
 from keras import layers
 
 
 # define data preprocessing pipeline
 def data_preprocessing():
+    """Defines the preprocessing pipeline"""
+
     _data_preprocessing = keras.Sequential([
         layers.Rescaling(1./255)
     ])
@@ -16,6 +17,8 @@ def data_preprocessing():
 
 # define data augmentation pipeline
 def data_augmentation():
+    """Defines the augmentation pipeline"""
+
     _data_augmentation = keras.Sequential([
         layers.RandomFlip(mode='horizontal_and_vertical'),
         # layers.RandomRotation(0.2),
@@ -28,6 +31,14 @@ def data_augmentation():
 
 # here we define a custom model from scratch
 def get_model(num_classes: int, input_shape: tuple[int, int, int]):
+    """
+    Return a fresh randomly initialized model
+
+    Args:
+        num_classes (int): number of classes
+        input_shape (tuple[int, int, int]): shape of the input
+    """
+
     # define input shape
     inputs = layers.Input(input_shape)
 
@@ -91,6 +102,14 @@ def get_model(num_classes: int, input_shape: tuple[int, int, int]):
 
 
 def from_pretrained_model(base_model: keras.models.Model, num_classes: int, input_shape: tuple[int], preproc_func=None):
+    """
+    Return a model using a pretrained backbone
+
+    Args:
+        base_model (keras.models.Model): base model to be used as backbone
+        num_classes (int): number of classes
+        input_shape (tuple[int, int, int]): shape of the input
+    """
 
     # define input shape
     inputs = layers.Input(input_shape)

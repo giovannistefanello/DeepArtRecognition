@@ -1,4 +1,5 @@
-# MODEL TESTING SCRIPT
+""" Model testing script """
+
 import logging
 import datetime
 import os

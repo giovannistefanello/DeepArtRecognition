@@ -1,4 +1,4 @@
-# FUNCTIONS AND UTILITIES FOR DATAFRAME HANDLING
+""" Functions and utilities for dataframe handling"""
 
 # standard libraries
 import glob
@@ -18,8 +18,21 @@ logger.addHandler(stream_handler)
 
 
 def check_ascii_conformity(df: pd.DataFrame):
+    """
+    Check that the dataframe has only ASCII characters.
+
+    Args:
+        df (pd.DataFrame): The dataframe to check.
+    """
 
     def check_one_col(column: pd.Series):
+        """
+        Check that the column contains only ASCII characters.
+
+        Args:
+            column (pd.Series): The column to check.
+        """
+
         # check for weird characters in artist name
         weird_entries = set()
         for entry in column:
@@ -39,6 +52,13 @@ def check_ascii_conformity(df: pd.DataFrame):
 
 
 def create_dataframe(data_dir: str, skip_files: list[str] = None):
+    """
+    Create a filepaths dataframe from a directory.
+
+    Args:
+        data_dir (str): The directory to read.
+        skip_files (list[str], optional): A list of file names to skip.
+    """
 
     # basic data fetch
     image_filenames = sorted(glob.glob(os.path.join(data_dir, '**/*.jpg'),
